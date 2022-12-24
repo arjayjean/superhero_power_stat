@@ -2,7 +2,7 @@
 
 ### I have created an ETL that:
 * **Extract:** Data is extracted from a SuperHero API by [Yoann Cribier](https://akabab.github.io/superhero-api/api/ "SuperHero API")
-* **Transform:** It will be transformed in Python
+* **Transform:** It will be transformed in Python from its JSON format into a form that fits the MySQL database
 * **Load:** Then loaded into a MySQL database
 
 ### ETL Process:
