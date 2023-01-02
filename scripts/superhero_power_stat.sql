@@ -6,8 +6,8 @@ CREATE TABLE characters (
     name 			varchar(50),
     gender			varchar(6),
     race 			varchar(20),
-    side			varchar(7), -- alignment = side
-    publisher		varchar(20),
+    side			varchar(8), -- alignment = side
+    universe		varchar(20),
     intelligence	tinyint(3),
     strength		tinyint(3),
     speed			tinyint(3),
@@ -17,49 +17,60 @@ CREATE TABLE characters (
     overall			float,
     primary key(id)
 );
+    
+-- CLEANING: Created a function to change the character's overall rating. Loaded the wrong overall rating.
+DELIMITER //
+create function overall(intelligence	tinyint(3),
+						strength		tinyint(3),
+						speed			tinyint(3),
+						durability		tinyint(3),
+						power			tinyint(3),
+						combat			tinyint(3))
+	returns  float
+	DETERMINISTIC
+BEGIN
+    
+	declare stats float;
+	declare overall float;
+    declare new_overall float;
+    
+    set stats = intelligence + strength + speed + durability + power + combat;
+	set overall = stats/600;
+    set new_overall = overall * 100;
+    
+	return  round(new_overall, 2);
+    
+END; //
+DELIMITER ;
 
-SELECT * FROM characters;
+-- Testing the function to see if the overall function produced the correct overall rating
+select alias, overall(intelligence, strength, speed, durability, power, combat) as overall
+from characters;
+
+-- CLEANING: Updated the overall rating to have the correct rating for each character
+update characters
+set overall = overall(intelligence, strength, speed, durability, power, combat);
 
 
-SELECT distinct publisher FROM characters
-order by publisher;
+
+Select alias, name, gender, race, side, universe 
+from characters
+where race is null 
+	AND universe <> 'Marvel Comics'
+    AND gender = 'Male'
+    AND side = 'Villain';
+    
+Select distinct race
+from characters
+-- where race like 'Cy%'
+order by race;
 
 
 update characters
-set publisher = 'Marvel Comics'
-where publisher like '%Angel%'
-	or publisher like 'Anti-%'
-    or publisher like 'Spider%'
-    or publisher like '%Deadpool%'
-    or publisher like 'Power %'
-    or publisher = 'Binary'
-    or publisher = 'Boom-Boom'
-    or publisher = 'Toxin'
-    or publisher like 'Venom%'
-    or publisher like 'Vindicator%'
-    or publisher = 'Tempest'
-    or publisher like 'Thor%'
-    or publisher = 'Phoenix'
-    or publisher = 'Giant-Man'
-    or publisher like 'Gemini%'
-    or publisher like 'Gemini%';
-    
-
-
-update characters
-set publisher = 'DC Comics'
-where publisher like 'Batman%'
-	or publisher like 'Batgirl%'
-    or publisher like '%Robin%'
-    or publisher like 'Flash%'
-    or publisher like 'Superman%'
-    or publisher = 'Red Hood'
-    or publisher = 'Black Racer'
-    or publisher = 'Wildstorm'
-    or publisher = 'Nightwing'
-    or publisher = 'Oracle'
-    or publisher = 'Spoiler'
-    or publisher = 'Speed Demon'
-    or publisher = 'Impulse';
-    
-    
+set race = 'Imskian'
+where alias in ('Atom Girl'
+                );
+            
+select * 
+from characters
+where alias like'Flash';
